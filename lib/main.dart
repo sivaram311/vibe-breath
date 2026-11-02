@@ -33,7 +33,7 @@ class VibeBreathApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Vibe Breath',
+      title: 'வாசி யோகம் - Vibe Breath',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
@@ -180,7 +180,7 @@ class _BreathingSessionScreenState extends State<BreathingSessionScreen>
       backgroundColor: Colors.black, // Pure AMOLED Black
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -190,43 +190,50 @@ class _BreathingSessionScreenState extends State<BreathingSessionScreen>
                   GestureDetector(
                     onTap: _openConfigSheet,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(22),
                         border: Border.all(color: Colors.white12),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            _pattern.title.toUpperCase(),
+                            _pattern.titleTamil,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 1.5,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
                             ),
                           ),
                           const SizedBox(width: 6),
-                          const Icon(Icons.arrow_drop_down, color: Colors.white70, size: 18),
+                          const Icon(Icons.arrow_drop_down, color: Colors.white70, size: 20),
                         ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  if (_pattern.sanskritTitle.isNotEmpty) ...[
-                    Text(
-                      _pattern.sanskritTitle,
-                      style: const TextStyle(color: Colors.white38, fontSize: 12),
-                    ),
-                    const SizedBox(height: 4),
-                  ],
+                  const SizedBox(height: 5),
                   Text(
-                    _pattern.subtitle,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.white54, fontSize: 12),
+                    _pattern.siddhaAuthor,
+                    style: const TextStyle(color: Color(0xFFFFD700), fontSize: 11, fontWeight: FontWeight.w500),
                   ),
+                  if (_pattern.verseTamil.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        '"${_pattern.verseTamil}"',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white38,
+                          fontSize: 11,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
 
@@ -247,10 +254,10 @@ class _BreathingSessionScreenState extends State<BreathingSessionScreen>
                 children: [
                   // Haptic vibration feedback badge
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
                     decoration: BoxDecoration(
                       color: const Color(0xFF00F2FE).withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(14),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -268,7 +275,7 @@ class _BreathingSessionScreenState extends State<BreathingSessionScreen>
                       ],
                     ),
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 12),
 
                   // Frosted Floating Pill Dock
                   Container(
@@ -291,7 +298,7 @@ class _BreathingSessionScreenState extends State<BreathingSessionScreen>
                       children: [
                         // Cycle Counter
                         Text(
-                          'Cycle ${_completedCycles + 1} / $_targetCycles',
+                          'சுழற்சி ${_completedCycles + 1} / $_targetCycles',
                           style: const TextStyle(
                             color: Colors.white70,
                             fontSize: 13,
@@ -335,7 +342,7 @@ class _BreathingSessionScreenState extends State<BreathingSessionScreen>
                       ],
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                 ],
               ),
             ],

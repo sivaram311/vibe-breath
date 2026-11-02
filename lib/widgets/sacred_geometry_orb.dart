@@ -72,52 +72,70 @@ class _SacredGeometryOrbState extends State<SacredGeometryOrb> with SingleTicker
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Sanskrit indicator badge
-                if (widget.currentPhase.sanskritLabel.isNotEmpty) ...[
-                  Text(
-                    widget.currentPhase.sanskritLabel,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: widget.currentPhase.startColor.withValues(alpha: 0.9),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 1.2,
+                // சித்தர் குறிப்பு (Siddha Note)
+                if (widget.currentPhase.siddhaNote.isNotEmpty) ...[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Text(
+                      widget.currentPhase.siddhaNote,
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: widget.currentPhase.startColor.withValues(alpha: 0.85),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 0.8,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 4),
                 ],
 
-                // Main English Label
+                // முதன்மை தமிழ் பெயர் (Primary Tamil Label)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    widget.currentPhase.labelTamil,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.1,
+                    ),
+                  ),
+                ),
+
+                // துணை ஆங்கில பெயர் (Secondary English Label)
                 Text(
-                  widget.currentPhase.label,
-                  textAlign: TextAlign.center,
+                  widget.currentPhase.labelEnglish,
                   style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
+                    color: Colors.white54,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
                 const SizedBox(height: 6),
 
-                // Seconds remaining
+                // வினாடிகள் (Seconds Remaining)
                 Text(
-                  '${widget.secondsRemaining}s',
+                  '${widget.secondsRemaining}வி',
                   style: TextStyle(
                     color: widget.currentPhase.startColor,
-                    fontSize: 46,
+                    fontSize: 44,
                     fontWeight: FontWeight.w200,
                     fontFeatures: const [FontFeature.tabularFigures()],
                   ),
                 ),
 
-                // Nostril directional cue badge
+                // இடைகலை / பிங்கலை குறிப்பான் (Nostril cue in Tamil)
                 if (widget.currentPhase.nostrilSide != NostrilSide.both) ...[
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
                     decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.7),
+                      color: Colors.black.withValues(alpha: 0.75),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: widget.currentPhase.startColor.withValues(alpha: 0.5),
@@ -134,11 +152,11 @@ class _SacredGeometryOrbState extends State<SacredGeometryOrb> with SingleTicker
                           color: widget.currentPhase.startColor,
                           size: 13,
                         ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: 5),
                         Text(
                           widget.currentPhase.nostrilSide == NostrilSide.left
-                              ? 'Ida (Moon / Left)'
-                              : 'Pingala (Sun / Right)',
+                              ? 'இடைகலை (சந்திர கலை)'
+                              : 'பிங்கலை (சூரிய கலை)',
                           style: TextStyle(
                             color: widget.currentPhase.startColor,
                             fontSize: 11,
@@ -178,7 +196,7 @@ class SacredMandalaPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final baseRadius = 82.0 * scale;
 
-    // 1. Outer Bioluminescent Aura
+    // 1. அவுரா ஒளி வட்டம் (Outer Bioluminescent Aura)
     final auraPaint = Paint()
       ..shader = RadialGradient(
         colors: [
@@ -190,7 +208,7 @@ class SacredMandalaPainter extends CustomPainter {
       ).createShader(Rect.fromCircle(center: center, radius: baseRadius * 1.6));
     canvas.drawCircle(center, baseRadius * 1.6, auraPaint);
 
-    // 2. Sacred Geometry: 8-Petal Lotus Pattern
+    // 2. அஷ்டதள தாமரை இதழ்கள் (8-Petal Sacred Lotus)
     final lotusPaint = Paint()
       ..color = startColor.withValues(alpha: 0.22)
       ..style = PaintingStyle.stroke
@@ -206,7 +224,7 @@ class SacredMandalaPainter extends CustomPainter {
       canvas.drawCircle(petalCenter, baseRadius * 0.55, lotusPaint);
     }
 
-    // 3. Sri Yantra Intersecting Triangles
+    // 3. ஸ்ரீ சக்கர முக்கோணங்கள் (Sri Yantra Triangles)
     final yantraPaint = Paint()
       ..color = endColor.withValues(alpha: 0.18)
       ..style = PaintingStyle.stroke
@@ -215,7 +233,7 @@ class SacredMandalaPainter extends CustomPainter {
     _drawEquilateralTriangle(canvas, center, baseRadius * 1.15, rotationAngle * 0.5, yantraPaint);
     _drawEquilateralTriangle(canvas, center, baseRadius * 1.15, rotationAngle * 0.5 + math.pi, yantraPaint);
 
-    // 4. Central Prana Core
+    // 4. உள் பிராண மையம் (Core Prana Sphere)
     final coreGradient = RadialGradient(
       colors: [
         startColor.withValues(alpha: 0.85),
@@ -229,7 +247,7 @@ class SacredMandalaPainter extends CustomPainter {
       ..shader = coreGradient.createShader(Rect.fromCircle(center: center, radius: baseRadius));
     canvas.drawCircle(center, baseRadius, corePaint);
 
-    // 5. Golden Rim Contour
+    // 5. பொன் விளிம்பு வட்டம் (Golden Rim)
     final rimPaint = Paint()
       ..color = startColor.withValues(alpha: 0.7)
       ..style = PaintingStyle.stroke
