@@ -5,13 +5,13 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'models/breathing_pattern.dart';
 import 'services/haptic_service.dart';
-import 'widgets/breathing_orb.dart';
-import 'widgets/pattern_config_sheet.dart';
+import 'widgets/sacred_geometry_orb.dart';
+import 'widgets/pranayama_config_sheet.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Edge-to-edge transparent navigation bar for AMOLED flagships
+  // Edge-to-edge transparent navigation bar for AMOLED displays
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -63,6 +63,7 @@ class _BreathingSessionScreenState extends State<BreathingSessionScreen>
   int _currentPhaseIndex = 0;
   int _secondsRemainingInPhase = 4;
   int _completedCycles = 0;
+  late int _targetCycles;
   bool _isPlaying = false;
 
   Timer? _tickerTimer;
@@ -73,6 +74,7 @@ class _BreathingSessionScreenState extends State<BreathingSessionScreen>
   @override
   void initState() {
     super.initState();
+    _targetCycles = _pattern.defaultCycles;
     _secondsRemainingInPhase = currentPhase.durationSeconds;
 
     _phaseAnimController = AnimationController(
@@ -129,6 +131,11 @@ class _BreathingSessionScreenState extends State<BreathingSessionScreen>
     if (nextIndex >= _pattern.phases.length) {
       nextIndex = 0;
       _completedCycles++;
+      if (_completedCycles >= _targetCycles) {
+        _completedCycles = _targetCycles;
+        _togglePlayPause();
+        return;
+      }
     }
 
     _currentPhaseIndex = nextIndex;
@@ -141,9 +148,10 @@ class _BreathingSessionScreenState extends State<BreathingSessionScreen>
     HapticService.triggerPhaseTransition(currentPhase);
   }
 
-  void _selectPattern(BreathingPattern pattern) {
+  void _handleConfigUpdate(BreathingPattern pattern, int cycles) {
     setState(() {
       _pattern = pattern;
+      _targetCycles = cycles;
       _currentPhaseIndex = 0;
       _secondsRemainingInPhase = pattern.phases.first.durationSeconds;
       _completedCycles = 0;
@@ -158,9 +166,10 @@ class _BreathingSessionScreenState extends State<BreathingSessionScreen>
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => PatternConfigSheet(
+      builder: (context) => PranayamaConfigSheet(
         initialPattern: _pattern,
-        onSelect: _selectPattern,
+        totalCycles: _targetCycles,
+        onSave: _handleConfigUpdate,
       ),
     );
   }
@@ -171,7 +180,7 @@ class _BreathingSessionScreenState extends State<BreathingSessionScreen>
       backgroundColor: Colors.black, // Pure AMOLED Black
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -193,7 +202,7 @@ class _BreathingSessionScreenState extends State<BreathingSessionScreen>
                           Text(
                             _pattern.title.toUpperCase(),
                             style: const TextStyle(
-                              color: Colors.white70,
+                              color: Colors.white,
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                               letterSpacing: 1.5,
@@ -205,19 +214,27 @@ class _BreathingSessionScreenState extends State<BreathingSessionScreen>
                       ),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
+                  if (_pattern.sanskritTitle.isNotEmpty) ...[
+                    Text(
+                      _pattern.sanskritTitle,
+                      style: const TextStyle(color: Colors.white38, fontSize: 12),
+                    ),
+                    const SizedBox(height: 4),
+                  ],
                   Text(
                     _pattern.subtitle,
-                    style: const TextStyle(color: Colors.white54, fontSize: 13),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.white54, fontSize: 12),
                   ),
                 ],
               ),
 
-              // Concentric Breathing Visualizer
+              // Sacred Geometry Mandala Orb Visualizer
               AnimatedBuilder(
                 animation: _phaseAnimController,
                 builder: (context, child) {
-                  return BreathingOrb(
+                  return SacredGeometryOrb(
                     currentPhase: currentPhase,
                     animationProgress: _isPlaying ? _phaseAnimController.value : 0.0,
                     secondsRemaining: _secondsRemainingInPhase,
@@ -244,19 +261,19 @@ class _BreathingSessionScreenState extends State<BreathingSessionScreen>
                           currentPhase.hapticDescription,
                           style: const TextStyle(
                             color: Color(0xFF00F2FE),
-                            fontSize: 12,
+                            fontSize: 11,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14),
 
                   // Frosted Floating Pill Dock
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                     decoration: BoxDecoration(
                       color: const Color(0xFF12141C),
                       borderRadius: BorderRadius.circular(32),
@@ -274,10 +291,10 @@ class _BreathingSessionScreenState extends State<BreathingSessionScreen>
                       children: [
                         // Cycle Counter
                         Text(
-                          'Cycle ${_completedCycles + 1} / ${_pattern.defaultCycles}',
+                          'Cycle ${_completedCycles + 1} / $_targetCycles',
                           style: const TextStyle(
                             color: Colors.white70,
-                            fontSize: 14,
+                            fontSize: 13,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -286,8 +303,8 @@ class _BreathingSessionScreenState extends State<BreathingSessionScreen>
                         GestureDetector(
                           onTap: _togglePlayPause,
                           child: Container(
-                            width: 54,
-                            height: 54,
+                            width: 52,
+                            height: 52,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               gradient: const LinearGradient(
@@ -305,7 +322,7 @@ class _BreathingSessionScreenState extends State<BreathingSessionScreen>
                             child: Icon(
                               _isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
                               color: Colors.black,
-                              size: 32,
+                              size: 30,
                             ),
                           ),
                         ),
@@ -318,7 +335,7 @@ class _BreathingSessionScreenState extends State<BreathingSessionScreen>
                       ],
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
                 ],
               ),
             ],

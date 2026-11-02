@@ -23,9 +23,9 @@ class HapticService {
     if (!_initialized) await init();
 
     try {
-      switch (phase.type) {
-        case BreathPhaseType.inhale:
-          // Micro-tick ramp-up for Realme P2 Pro X-axis linear motor
+      switch (phase.hapticType) {
+        case HapticPatternType.rampUp:
+          // Micro-tick ramp-up for Inhale (Puraka)
           if (_hasCustomVibrations) {
             await Vibration.vibrate(
               pattern: [0, 40, 80, 50, 100, 60, 120, 80],
@@ -36,37 +36,60 @@ class HapticService {
           }
           break;
 
-        case BreathPhaseType.holdIn:
-          // Rhythmic heartbeat bump
+        case HapticPatternType.heartbeat:
+          // Rhythmic heartbeat bump for Hold (Antar Kumbhaka)
           if (_hasCustomVibrations) {
             await Vibration.vibrate(
-              pattern: [0, 50, 100, 70],
-              intensities: [0, 180, 0, 220],
+              pattern: [0, 60, 100, 80],
+              intensities: [0, 190, 0, 240],
             );
           } else {
             await HapticFeedback.heavyImpact();
           }
           break;
 
-        case BreathPhaseType.exhale:
-          // Smooth descending hum
+        case HapticPatternType.rampDown:
+          // Smooth descending hum for Exhale (Rechaka)
           if (_hasCustomVibrations) {
             await Vibration.vibrate(
               pattern: [0, 120, 80, 80, 120, 40],
-              intensities: [0, 220, 0, 140, 0, 70],
+              intensities: [0, 240, 0, 150, 0, 70],
             );
           } else {
             await HapticFeedback.lightImpact();
           }
           break;
 
-        case BreathPhaseType.holdOut:
-          // Pure stillness - micro gentle click to acknowledge stillness
+        case HapticPatternType.stillness:
+          // Grounding root pulse followed by absolute silence (Bahya Kumbhaka)
           await HapticFeedback.selectionClick();
+          break;
+
+        case HapticPatternType.continuousHum:
+          // Bhramari Humming Bee: Sustained low resonant vibration
+          if (_hasCustomVibrations) {
+            await Vibration.vibrate(
+              pattern: [0, 600, 100, 600, 100, 600],
+              intensities: [0, 120, 0, 140, 0, 120],
+            );
+          } else {
+            await HapticFeedback.mediumImpact();
+          }
+          break;
+
+        case HapticPatternType.rapidPulse:
+          // Kapalabhati quick burst
+          if (_hasCustomVibrations) {
+            await Vibration.vibrate(duration: 50, amplitude: 255);
+          } else {
+            await HapticFeedback.heavyImpact();
+          }
+          break;
+
+        case HapticPatternType.none:
           break;
       }
     } catch (_) {
-      // Fallback to standard platform haptic feedback
       HapticFeedback.selectionClick();
     }
   }
